@@ -28,4 +28,4 @@ curl http://localhost:8888
 
 ```
 
-_This line is for testing trigger GHA_
+_This line is for testing trigger GHA workflow_
