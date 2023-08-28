@@ -22,7 +22,7 @@ on:
 
 jobs:
   basic-docker-build:
-    name: Docker Build add multil platform
+    name: Docker Build add metadata
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -37,11 +37,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Docker Metadata action
+        id: metadata
+        uses: docker/metadata-action@v4.6.0
+        with:
+          images: ductt02/docker-ci-automation
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=04
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=ref,event=pr
+            type=ref,event=branch
+            type=semver,pattern={{version}}
       - name: Docker build
         uses: docker/build-push-action@v4.1.1
         with:
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ductt02/docker-ci-automation:latest,ductt02/docker-ci-automation:01
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64,linux/arm/v7
