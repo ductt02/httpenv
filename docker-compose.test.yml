@@ -7,13 +7,14 @@ services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./healthchecks:/healthchecks
     healthcheck:
       test: /healthchecks/postgres-healthcheck
       interval: '5s'
+      start_period: '10s'
+
   sut:
     image: '${TESTING_IMAGE}'
     depends_on:
