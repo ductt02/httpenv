@@ -22,7 +22,7 @@ on:
 
 jobs:
   basic-docker-build:
-    name: Docker Build with CVE scanning (non-blocking)
+    name: Docker Build with CVE scanning (blocking)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,10 +68,11 @@ jobs:
           vuln-type: 'os,library'
           severity: 'HIGH,CRITICAL'
           ignore-unfixed: true
-          output-file: 'trivy-results.sarif'
+          output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
+        if: ${{ always() }}
         with:
           sarif_file: 'trivy-results.sarif'
 
